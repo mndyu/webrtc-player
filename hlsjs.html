@@ -1,0 +1,44 @@
+<html>
+  <head>
+  </head>
+  <body>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <!-- Or if you want a more recent canary version -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/hls.js@canary"></script> -->
+
+    <style>
+      #url {
+        width: 30rem;
+      }
+      .play {
+        width: 5rem;
+      }
+    </style>
+
+    <input id="url" value="https://stream.newjivr.com/hls/stream/playlist.m3u8"><button id="play" onclick="play()">再生</button>
+    <br>
+
+    <video id="video" controls></video>
+
+    <script>
+      function play() {
+        console.log("play")
+        var url = document.querySelector("#url").value
+
+        var video = document.getElementById('video');
+        if (Hls.isSupported()) {
+          var config = {
+            liveSyncDurationCount: 1,
+            liveMaxLatencyDurationCount: 5,
+          }
+          var hls = new Hls(config);
+          hls.loadSource(url);
+          hls.attachMedia(video);
+          hls.on(Hls.Events.MANIFEST_PARSED, function() {
+            video.play();
+          });
+        }
+      }
+    </script>
+  </body>
+</html>
