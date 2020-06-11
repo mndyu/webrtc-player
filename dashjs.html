@@ -189,7 +189,7 @@
 
         applyParameters();
 
-        return player;
+        setup(player);
       }
 
       function applyParameters() {
@@ -211,14 +211,8 @@
           },
         });
       }
-    </script>
-
-
-
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-          var player = init();
-
+    
+      function setup(player) {
           setInterval(function() {
               var dashMetrics = player.getDashMetrics();
               var settings = player.getSettings();
