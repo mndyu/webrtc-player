@@ -493,6 +493,18 @@
         }
       }
     </style>
+
+
+    <script>
+      window.addEventListener('wheel', function(e) {
+        var cam = document.querySelector("a-entity[camera]")
+        var o = cam.getAttribute("camera")
+        var z = o.zoom + e.deltaY / 40 * -1
+        cam.setAttribute("camera", {
+          zoom: Math.max(Math.min(z, 10), 1)
+        })
+      });
+    </script>
   </head>
   <body>
     <div style="z-index: 1000;position: relative;">
