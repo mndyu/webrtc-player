@@ -182,11 +182,10 @@
 
         var url = document.querySelector("#url").value;
 
-        var video = document.querySelector("#video");
+        var video = document.querySelector("video");
         player = dashjs.MediaPlayer().create();
         player.initialize(video, url, true);
         player.updateSettings({ streaming: { lowLatencyEnabled: true } });
-        player.attachView(video)
 
         applyParameters();
 
