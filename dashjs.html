@@ -186,6 +186,7 @@
         player = dashjs.MediaPlayer().create();
         player.initialize(video, url, true);
         player.updateSettings({ streaming: { lowLatencyEnabled: true } });
+        player.attachView(video)
 
         applyParameters();
 
@@ -211,7 +212,7 @@
           },
         });
       }
-    
+
       function setup(player) {
           setInterval(function() {
               var dashMetrics = player.getDashMetrics();
