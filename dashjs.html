@@ -1,10 +1,8 @@
 <html>
-  <head> </head>
-  <body>
+  <head>
     <script src="https://cdn.dashjs.org/latest/dash.all.debug.js"></script>
     <!-- Or if you want a more recent canary version -->
     <!-- <script src="https://cdn.jsdelivr.net/npm/hls.js@canary"></script> -->
-
     <style>
       #url {
         width: 30rem;
@@ -13,21 +11,63 @@
         width: 5rem;
       }
     </style>
+
+    <style>
+      .video-wrapper {
+        display: flex;
+        flex-flow: row wrap;
+      }
+
+      .video-wrapper > div:nth-child(2) {
+        margin-left: 25px;
+      }
+
+      video {
+        width: 640px;
+        height: 360px;
+      }
+
+      ul {
+        margin: 0;
+      }
+
+      input {
+        width: 5em;
+        border: 1px solid gray;
+        padding: 0 4px 0 8px;
+      }
+
+      .help-container {
+        display: flex;
+        flex-flow: row wrap;
+        margin-top: 1em;
+        align-content: center;
+        background: white;
+        border: solid 1px #ddd;
+        padding: 0.5em;
+      }
+
+      .help-container > div {
+        width: 33.3%;
+        padding: 1em;
+        box-sizing: border-box;
+      }
+
+      .help-container h3 {
+        margin-top: 0;
+      }
+    </style>
+  </head>
+  <body>
     <input
-    id="url"
-    value="https://stream.newjivr.com/hls/stream/playlist.m3u8"
+      id="url"
+      value="https://stream.newjivr.com/hls/stream/playlist.m3u8"
     /><button id="play" onclick="play()">再生</button>
     <br />
 
     <div>
       <div class="video-wrapper">
-        <video
-        id="video"
-          controls="true"
-          preload="auto"
-          src="blob:https://reference.dashif.org/65d1a675-5ed2-b14f-95d2-8328edda3176"
-          autoplay=""
-        ></video>
+        <video controls="true"></video>
         <div>
           <div>
             <form action="javascript:applyParameters()">
@@ -67,11 +107,11 @@
           <fieldset>
             <legend>Current values</legend>
             <ul>
-              <li>Latency: <span id="latency-tag">2.998 secs</span></li>
-              <li>Min. drift: <span id="mindrift-tag">0.05 secs</span></li>
-              <li>Playback rate: <span id="playbackrate-tag">1</span></li>
+              <li>Latency: <span id="latency-tag"></span></li>
+              <li>Min. drift: <span id="mindrift-tag"></span></li>
+              <li>Playback rate: <span id="playbackrate-tag"></span></li>
               <li>
-                Buffer: <b><span id="buffer-tag">1.326 secs</span></b>
+                Buffer: <b><span id="buffer-tag"></span></b>
               </li>
             </ul>
           </fieldset>
@@ -171,6 +211,30 @@
           },
         });
       }
+    </script>
+
+
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+          var player = init();
+
+          setInterval(function() {
+              var dashMetrics = player.getDashMetrics();
+              var settings = player.getSettings();
+
+              var currentLatency = parseFloat(player.getCurrentLiveLatency(), 10);
+              document.getElementById("latency-tag").innerHTML = currentLatency + " secs";
+
+              document.getElementById("mindrift-tag").innerHTML = settings.streaming.liveCatchUpMinDrift + " secs";
+
+              var currentPlaybackRate = player.getPlaybackRate();
+              document.getElementById("playbackrate-tag").innerHTML = Math.round(currentPlaybackRate * 100) / 100;
+
+              var currentBuffer = dashMetrics.getCurrentBufferLevel("video");
+              document.getElementById("buffer-tag").innerHTML = currentBuffer + " secs";
+          }, 200);
+      });
     </script>
   </body>
 </html>
