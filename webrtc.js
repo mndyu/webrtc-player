@@ -1,13 +1,13 @@
-const GO_BUTTON_START = "Play";
-const GO_BUTTON_STOP = "Stop";
+const GO_BUTTON_START = "再生";
+const GO_BUTTON_STOP = "停止";
 
 var remoteVideo = null;
 var peerConnection = null;
 var peerConnectionConfig = {'iceServers': []};
 var localStream = null;
-var wsURL = "wss://stream.**vr.com/webrtc-session.json";
+var wsURL = "wss://vrlive.**vr.com/webrtc-session.json";
 var wsConnection = null;
-var streamInfo = {applicationName:"webrtc", streamName:"stream", sessionId:"[empty]"};
+var streamInfo = {applicationName:"live", streamName:"upload", sessionId:"[empty]"};
 var userData = {param1:"value1"};
 var repeaterRetryCount = 0;
 var newAPI = false;
@@ -48,6 +48,7 @@ function pageReady()
 	$('#streamName').val(cookieStreamName);
 	
 	$("#buttonGo").attr('value', GO_BUTTON_START);
+	$("#control-buttons").hide();
 	
 	remoteVideo = document.getElementById('remoteVideo');
 
@@ -216,6 +217,8 @@ function startPlay()
 	if (!doGetAvailableStreams)
 	{
 		$("#buttonGo").attr('value', GO_BUTTON_STOP);
+		$("#control-form").hide();
+		$("#control-buttons").show();
 	}
 }
 
@@ -224,16 +227,18 @@ function stopPlay()
 	if (peerConnection != null)
 		peerConnection.close();
 	peerConnection = null;
-	
+
 	if (wsConnection != null)
 		wsConnection.close();
 	wsConnection = null;
-	
+
 	remoteVideo.src = ""; // this seems like a chrome bug - if set to null it will make HTTP request
 
 	console.log("stopPlay");
 
 	$("#buttonGo").attr('value', GO_BUTTON_START);
+	$("#control-form").show();
+	$("#control-buttons").hide();
 }
 
 // start button clicked

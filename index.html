@@ -2,7 +2,6 @@
 <html class="a-fullscreen">
   <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-
     <!-- <meta
       http-equiv="origin-trial"
       data-feature="WebVR (For Chrome M59+)"
@@ -19,17 +18,29 @@
     /> -->
     <meta aframe-injected="" name="mobile-web-app-capable" content="yes" />
     <meta aframe-injected="" name="theme-color" content="black" />
-    <script src="js/aframe-master.js"></script>
-    <script src="js/jquery-3.1.0.min.js"></script>
-		<script src="js/jquery.cookie.js"></script>
-		<script src="webrtc.js"></script>
+
 		<style>
-		.div-section {
-      color: white;
-      margin-bottom: 8px;
-    }
+      #control-form {
+        z-index: 1000;
+        position: relative;
+        height: 100vh;
+        width: 100vw;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: white;
+      }
+      #control-buttons {
+        z-index: 1000;
+        position: fixed;
+        bottom: 0;
+        width: 100vw;
+        display: flex;
+        justify-content: center;
+        margin-bottom: 1rem;
+      }
 		</style>
-    <style type="text/css" data-href="src\style\aframe.css">
+    <style>
       html.a-fullscreen {
         bottom: 0;
         left: 0;
@@ -413,7 +424,7 @@
         width: 100%;
       }
     </style>
-    <style type="text/css" data-href="src\style\rStats.css">
+    <style>
       .rs-base {
         background-color: #333;
         color: #fafafa;
@@ -494,7 +505,10 @@
       }
     </style>
 
-
+    <script src="js/aframe-master.js"></script>
+    <script src="js/jquery-3.1.0.min.js"></script>
+    <script src="js/jquery.cookie.js"></script>
+    <script src="webrtc.js"></script>
     <script>
       window.addEventListener('wheel', function(e) {
         var cam = document.querySelector("a-entity[camera]")
@@ -507,8 +521,8 @@
     </script>
   </head>
   <body>
-    <div style="z-index: 1000;position: relative;">
-      <div class="div-section">
+    <div id="control-form">
+      <div>
         <table>
           <tr><td><strong>SDP URL</strong></td><td><input type="text" id="sdpURL" size="50" value=""/></td></tr>
           <tr><td><strong>Application Name</strong></td><td><input type="text" id="applicationName" size="25" value=""/></td></tr>
@@ -516,13 +530,10 @@
 		      <tr><td>&nbsp;</td><td><input type="button" id="buttonGo" onclick="start()" value="" /></td></tr>
         </table>
       </div>
-      <div class="div-section">
-      </div>
-      <!-- <input type="button" id="buttonCheckStream" onclick="getAvailableStreams()" value="Get Available Streams" /> -->
-
-      <div>
-        <span id="sdpDataTag"></span>
-      </div>
+    </div>
+    <div id="control-buttons">
+      <button onclick="stopPlay()">切断</button>
+      <button onclick="stopPlay(); startPlay()" style="margin-left: 1em;">リロード</button>
     </div>
     <div style="z-index: -1;position: relative;">
       <video id="remoteVideo" autoplay playsinline controls muted style="height:480px;"></video>
@@ -563,7 +574,6 @@
         rotation=""
         look-controls=""
         aframe-injected=""
-        camera="2"
       ></a-entity>
       <div class="a-enter-vr" aframe-injected="">
         <button
