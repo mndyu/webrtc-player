@@ -241,6 +241,11 @@ function stopPlay()
 	$("#control-buttons").hide();
 }
 
+function fullScreen() {
+	const el = document.querySelector(".a-canvas.a-grab-cursor")
+	el.requestFullscreen()
+}
+
 // start button clicked
 function start() 
 {

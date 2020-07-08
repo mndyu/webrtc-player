@@ -534,6 +534,7 @@
     <div id="control-buttons">
       <button onclick="stopPlay()">切断</button>
       <button onclick="stopPlay(); startPlay()" style="margin-left: 1em;">リロード</button>
+      <button onclick="fullScreen()">全画面</button>
     </div>
     <div style="z-index: -1;position: relative;">
       <video id="remoteVideo" autoplay playsinline controls muted style="height:480px;"></video>
@@ -560,12 +561,13 @@
       <a-videosphere
         src="#remoteVideo"
       ></a-videosphere>
-      <canvas
+      <!-- <canvas
+        id="vr-screen"
         class="a-canvas a-grab-cursor"
         data-aframe-canvas="true"
         width="1920"
         height="1048"
-      ></canvas>
+      ></canvas> -->
       <div class="a-loader-title" style="display: none;">360 Video</div>
       <a-entity
         camera=""
