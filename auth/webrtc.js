@@ -5,13 +5,10 @@ var remoteVideo = null;
 var peerConnection = null;
 var peerConnectionConfig = {'iceServers': []};
 var localStream = null;
-var wsURL = "wss://vrlive.**vr.com/webrtc-session.json";
+var streamServer = "vrlive.newjivr.com";
+var wsURL = `wss://${streamServer}/webrtc-session.json`;
 var wsConnection = null;
 var streamInfo = {applicationName:"live", streamName:"upload", sessionId:"[empty]"};
-var userData = {
-	user: "user1",
-	password: "korewapasuwa-dodesu",
-};
 var repeaterRetryCount = 0;
 var newAPI = false;
 var doGetAvailableStreams = false;
@@ -46,7 +43,7 @@ function pageReady()
 	}
 	console.log('cookieStreamName: '+cookieStreamName);
 
-	$('#sdpURL').val(cookieWSURL);
+	// $('#sdpURL').val(cookieWSURL);
 	$('#applicationName').val(cookieApplicationName);
 	$('#streamName').val(cookieStreamName);
 	
@@ -62,6 +59,83 @@ function pageReady()
 
 	console.log("newAPI: "+newAPI);
 }
+
+// start button clicked
+function start()
+{
+	doGetAvailableStreams=false;
+
+	if (peerConnection == null)
+		startPlay();
+	else
+		stopPlay();
+}
+
+function getAvailableStreams()
+{
+	doGetAvailableStreams=true;
+	startPlay();
+}
+
+function startPlay()
+{
+	repeaterRetryCount = 0;
+	
+	// wsURL = $('#sdpURL').val();
+	streamInfo.applicationName = $('#applicationName').val();
+	streamInfo.streamName = $('#streamName').val();
+		
+	$.cookie("webrtcPublishWSURL", wsURL, { expires: 365 });
+	$.cookie("webrtcPublishApplicationName", streamInfo.applicationName, { expires: 365 });
+	$.cookie("webrtcPublishStreamName", streamInfo.streamName, { expires: 365 });
+	
+	console.log("startPlay: wsURL:"+wsURL+" streamInfo:"+JSON.stringify(streamInfo));
+	
+	wsConnect(wsURL);
+	
+	if (!doGetAvailableStreams)
+	{
+		$("#buttonGo").attr('value', GO_BUTTON_STOP);
+		$("#control-form").hide();
+		$("#control-buttons").show();
+	}
+}
+
+function stopPlay()
+{
+	if (peerConnection != null)
+		peerConnection.close();
+	peerConnection = null;
+
+	if (wsConnection != null)
+		wsConnection.close();
+	wsConnection = null;
+
+	remoteVideo.src = ""; // this seems like a chrome bug - if set to null it will make HTTP request
+
+	console.log("stopPlay");
+
+	$("#buttonGo").attr('value', GO_BUTTON_START);
+	$("#control-form").show();
+	$("#control-buttons").hide();
+}
+
+function fullScreen() {
+	const el = document.querySelector(".a-canvas.a-grab-cursor")
+	el.requestFullscreen()
+}
+
+function getUserData() {
+	const userName = $('#userName').val();
+	const userPwd = $('#userPwd').val();
+	return {
+		user: userName,
+		password: userPwd,
+	};
+}
+
+
+
 
 function wsConnect(url)
 {
@@ -97,12 +171,14 @@ function wsConnect(url)
 	
 	function sendPlayGetOffer()
 	{
+		const userData = getUserData();
 		console.log("sendPlayGetOffer: "+JSON.stringify(streamInfo));
 		wsConnection.send('{"direction":"play", "command":"getOffer", "streamInfo":'+JSON.stringify(streamInfo)+', "userData":'+JSON.stringify(userData)+'}');
 	}
 
 	function sendPlayGetAvailableStreams()
 	{
+		const userData = getUserData();
 		console.log("sendPlayGetAvailableStreams: "+JSON.stringify(streamInfo));
 		wsConnection.send('{"direction":"play", "command":"getAvailableStreams", "streamInfo":'+JSON.stringify(streamInfo)+', "userData":'+JSON.stringify(userData)+'}');
 	}
@@ -195,70 +271,6 @@ function wsConnect(url)
 	}
 }
 
-function getAvailableStreams()
-{
-	doGetAvailableStreams=true;
-	startPlay();
-}
-
-function startPlay()
-{
-	repeaterRetryCount = 0;
-	
-	wsURL = $('#sdpURL').val();
-	streamInfo.applicationName = $('#applicationName').val();
-	streamInfo.streamName = $('#streamName').val();
-		
-	$.cookie("webrtcPublishWSURL", wsURL, { expires: 365 });
-	$.cookie("webrtcPublishApplicationName", streamInfo.applicationName, { expires: 365 });
-	$.cookie("webrtcPublishStreamName", streamInfo.streamName, { expires: 365 });
-	
-	console.log("startPlay: wsURL:"+wsURL+" streamInfo:"+JSON.stringify(streamInfo));
-	
-	wsConnect(wsURL);
-	
-	if (!doGetAvailableStreams)
-	{
-		$("#buttonGo").attr('value', GO_BUTTON_STOP);
-		$("#control-form").hide();
-		$("#control-buttons").show();
-	}
-}
-
-function stopPlay()
-{
-	if (peerConnection != null)
-		peerConnection.close();
-	peerConnection = null;
-
-	if (wsConnection != null)
-		wsConnection.close();
-	wsConnection = null;
-
-	remoteVideo.src = ""; // this seems like a chrome bug - if set to null it will make HTTP request
-
-	console.log("stopPlay");
-
-	$("#buttonGo").attr('value', GO_BUTTON_START);
-	$("#control-form").show();
-	$("#control-buttons").hide();
-}
-
-function fullScreen() {
-	const el = document.querySelector(".a-canvas.a-grab-cursor")
-	el.requestFullscreen()
-}
-
-// start button clicked
-function start() 
-{
-	doGetAvailableStreams=false;
-
-	if (peerConnection == null)
-		startPlay();
-	else
-		stopPlay();
-}
 
 function gotMessageFromServer(message) 
 {
@@ -334,7 +346,7 @@ function gotDescription(description)
 	peerConnection.setLocalDescription(description, function () 
 	{
 		console.log('sendAnswer');
-
+		const userData = getUserData();
 		wsConnection.send('{"direction":"play", "command":"sendResponse", "streamInfo":'+JSON.stringify(streamInfo)+', "sdp":'+JSON.stringify(description)+', "userData":'+JSON.stringify(userData)+'}');
 
 	}, function() {console.log('set description error')});
