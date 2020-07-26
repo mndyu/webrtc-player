@@ -204,6 +204,12 @@ function wsConnect(url)
 				$("#sdpDataTag").html('Live stream repeater timeout: '+streamName);
 				stopPlay();
 			}
+		} else if (msgStatus == 502) {
+			alert("まだ配信されていません")
+			stopPlay();
+		} else if (msgStatus == 519) {
+			alert("認証に失敗しました")
+			stopPlay();
 		}
 		else if (msgStatus != 200)
 		{
