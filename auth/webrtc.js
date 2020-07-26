@@ -126,7 +126,7 @@ function fullScreen() {
 }
 
 function getUserData() {
-	const userName = $('#userName').val();
+	const userName = streamInfo.applicationName; //$('#userName').val();
 	const userPwd = $('#userPwd').val();
 	return {
 		user: userName,
@@ -312,10 +312,10 @@ function enhanceSDP(sdpStr)
 	var hitMID = false;
 	var sdpStrRet = '';
 
-		for(var sdpIndex in sdpLines)
+	for(var sdpIndex in sdpLines)
 	{
 		var sdpLine = sdpLines[sdpIndex];
-		
+
 		if ( sdpLine.length == 0 )
 			continue;
 
